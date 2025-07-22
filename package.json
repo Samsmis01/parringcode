@@ -1,0 +1,17 @@
+{
+  "name": "whatsapp-pairing",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js",
+    "install-chromium": "PUPPETEER_PRODUCT=chrome npm install puppeteer"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "whatsapp-web.js": "^1.24.0",
+    "puppeteer": "^21.11.0",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
