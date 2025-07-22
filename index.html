@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>亗𝐇𝐄𝐗𒋲𝐓𝐄𝐂𝐇亗 - Appairage WhatsApp</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .device-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .pairing-code {
+            font-family: monospace;
+            font-size: 24px;
+            letter-spacing: 3px;
+            background: #f0f4f8;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        button {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Appareils connectés</h1>
+        <div class="device-card">
+            <h2>Connecter un appareil</h2>
+            <div id="phone-form">
+                <input type="tel" id="phone" placeholder="+33612345678" style="width: 100%; padding: 10px; margin: 10px 0;">
+                <button onclick="startPairing()">Générer un code d'appairage</button>
+            </div>
+            
+            <div id="pairing-section" style="display: none;">
+                <div class="pairing-code" id="pairing-code"></div>
+                <p><strong>Statut :</strong> <span id="pairing-status">En attente de connexion...</span></p>
+                <p id="last-active" style="color: #666;"></p>
+            </div>
+        </div>
+        
+        <div class="device-card">
+            <p><input type="checkbox" disabled> Vos messages personnels sont <strong>chiffrés de bout en bout</strong> sur tous vos appareils.</p>
+        </div>
+    </div>
+
+    <script>
+        async function startPairing() {
+            const phone = document.getElementById('phone').value;
+            const response = await fetch('/api/generate-pairing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+            
+            const { pairingCode, deviceName } = await response.json();
+            
+            document.getElementById('phone-form').style.display = 'none';
+            document.getElementById('pairing-section').style.display = 'block';
+            document.getElementById('pairing-code').textContent = pairingCode;
+            
+            // Vérification périodique du statut
+            const checkStatus = setInterval(async () => {
+                const res = await fetch(`/api/session-status/${pairingCode}`);
+                const data = await res.json();
+                
+                if (data.status === 'connected') {
+                    document.getElementById('pairing-status').textContent = `Connecté : ${deviceName}`;
+                    document.getElementById('last-active').textContent = `Dernière activité : ${data.lastActive}`;
+                    clearInterval(checkStatus);
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+                                                              </html
